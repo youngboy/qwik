@@ -24,6 +24,7 @@ export function createPortMessanger(port: chrome.runtime.Port): {
     port.onMessage.removeListener(onMessage);
   });
 
+  // @ts-ignore
   function onMessage(event: unknown, port: chrome.runtime.Port) {
     if (!event || typeof event !== 'object') return;
     const e = event as Record<PropertyKey, unknown>;
@@ -57,6 +58,7 @@ export function createRuntimeMessanger(): {
     [K in keyof Messages]?: ((payload: Messages[K]) => void)[];
   } = {};
 
+  // @ts-ignore
   chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     const id = message?.id as keyof Messages;
     if (typeof id !== 'string') return;

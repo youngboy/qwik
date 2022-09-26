@@ -8,4 +8,12 @@ export default defineConfig({
       manifest,
     }),
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        panel: 'index.html',
+      },
+    },
+    target: 'esnext',
+  },
 });
