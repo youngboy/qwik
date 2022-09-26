@@ -133,6 +133,18 @@ export async function configureDevServer(
             res.write(END_SSR_SCRIPT);
             res.end();
           }
+
+          // wait till client conn
+          setTimeout(() => {
+            server.ws.send({
+              type: 'custom',
+              event: 'QwikDevtoolsLogs',
+              data: {
+                timing: result.timing,
+                envData,
+              },
+            });
+          }, 500);
         } else {
           next();
         }
@@ -268,6 +280,7 @@ if (!window.__qwikViteLog) {
 
 const END_SSR_SCRIPT = `
 <script type="module" src="/@vite/client"></script>
+<script type="module" src="/@builder.io/qwik/devtools-adapter"></script>
 ${DEV_ERROR_HANDLING}
 ${ERROR_HOST}
 ${PERF_WARNING}

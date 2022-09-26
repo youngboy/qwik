@@ -306,6 +306,9 @@ export function qwikVite(qwikViteOpts: QwikVitePluginOptions = {}): any {
       if (id.startsWith('\0')) {
         return null;
       }
+      if (id === DEVTOOLS_MODULE) {
+        return id;
+      }
       if (isClientDevOnly && id === VITE_CLIENT_MODULE) {
         return id;
       }
@@ -315,6 +318,36 @@ export function qwikVite(qwikViteOpts: QwikVitePluginOptions = {}): any {
     load(id, loadOpts) {
       if (id.startsWith('\0')) {
         return null;
+      }
+      if (id === DEVTOOLS_MODULE) {
+        return {
+          code: `
+          window.history.pushState = new Proxy(window.history.pushState, {
+            apply: (target, thisArg, argArray) => {
+              window.postMessage({
+                id: 'QwikDevtoolsLogs',
+                payload: {
+                  type: 'route-request',
+                  data: argArray,
+                }
+              }, '*')
+              return target.apply(thisArg, argArray);
+            },
+          });
+
+          if (import.meta.hot) {
+            import.meta.hot.on('QwikDevtoolsLogs', (data) => {
+              window.postMessage({
+                id: 'QwikDevtoolsLogs',
+                payload: {
+                  type: 'page-request',
+                  data,
+                }
+              }, '*')
+            })
+          }
+          `,
+        };
       }
 
       id = qwikPlugin.normalizePath(id);
@@ -586,6 +619,7 @@ export const isNotNullable = <T>(v: T): v is NonNullable<T> => {
 
 const VITE_CLIENT_MODULE = `@builder.io/qwik/vite-client`;
 const CLIENT_DEV_INPUT = 'entry.dev.tsx';
+const DEVTOOLS_MODULE = '/@builder.io/qwik/devtools-adapter';
 
 /**
  * @alpha
