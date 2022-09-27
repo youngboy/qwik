@@ -85,10 +85,12 @@ From my knowledge, not found something particular useful for devtools, exists ma
 ## Inspect
 
 First, an excuse of being lazy not implement vDOM view from scratch for now
+
 - there are a lot of common UX on element panel and vDOM view
 - sometimes need to switch back and forward to digging
 
 And indeed, we definitely need to do it later
+
 - can't collapse virtual component in chrome element panel
 - support none chrome extension scenes
 
@@ -104,6 +106,7 @@ then the ways of inspecting internal props might be different.
 
 I'm suggesting this common layout for those component
 
+```
  ┌──────────────────────────────────┐
  │ search by name .....             │
  ├──────────────────────────────────┤
@@ -122,13 +125,13 @@ I'm suggesting this common layout for those component
  │ ParentComponent     Reveal       │
  │                     ──────       │
  └──────────────────────────────────┘
+```
 
 so, the question is how to
 
 - get props
 - get store
 - from an element, search for its parent
-
 
 ## Loggings
 
