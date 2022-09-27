@@ -12,7 +12,7 @@ Devtools extension is consist of three parts
 
 ### Devtools Page
 
-It is to create a devtool page, for now `devtools.html` is not rendered in anyway, it just import a script to access `chrome.devtools` like:
+It is to create a devtool page, for now `devtools.html` is not rendered in anywhere, it just import a script to access `chrome.devtools` like:
 
 ```javascript
 chrome.devtools.panels.create('Qwik', 'assets/icons/32.png', 'index.html', (panel) => {});
