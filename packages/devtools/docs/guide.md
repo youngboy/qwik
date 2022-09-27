@@ -129,16 +129,19 @@ I'm suggesting this common layout for those component
 
 so, the question is how to
 
-- get props
-- get store
-- from an element, search for its parent
+- [ ] get props
+- [ ] get store
+- [ ] get component$ function to reveal it in source
+- [ ] from an element, search for its parent component if there is
+- [ ] before container resumed, what info we can provide ?
 
 ## Loggings
 
 WIP
 
 - is `printRenderStats` useful for qwik app developer ? and how to interpret it or how to present it
-- put Performance Timing API result in here for every page request
+- For every page request, output performance timing result and server render metrics
+-
 
 ## Misc
 
@@ -149,7 +152,10 @@ With [Console Utilities](https://developer.chrome.com/docs/devtools/console/util
 
 By [VS Code platform url](https://code.visualstudio.com/docs/editor/command-line#_opening-vs-code-with-urls) we can provide a link to open source file in IDE
 
+- vscode://file/{full path to file}
+- vscode://file/{full path to file}:line:column
+
 ## References
 
-https://developer.chrome.com/docs/extensions/mv3/manifest/
-https://developer.chrome.com/docs/devtools/console/utilities/
+- [Chrome Extension manifest](https://developer.chrome.com/docs/extensions/mv3/manifest/)
+- [Chrome Console Utilities](https://developer.chrome.com/docs/devtools/console/utilities/)
