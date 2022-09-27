@@ -71,7 +71,7 @@ export default component$(() => {
 });
 ```
 
-Ideas for discussion:
+Ideas for **discussion**:
 
 - [ ] how about move dev log utils like `printRenderStats` to debugger, and show these in performance panel ?
 - [ ] how about put dev error handler or dev error box like `qerror` to debugger, then we have nice explanation and instruction to resolve it in logs panel ? not sure
@@ -127,7 +127,7 @@ I'm suggesting this common layout for those component
  └──────────────────────────────────┘
 ```
 
-so, the question is how to
+so, the question is **how to**
 
 - [ ] get props
 - [ ] get store
@@ -139,9 +139,8 @@ so, the question is how to
 
 WIP
 
-- is `printRenderStats` useful for qwik app developer ? and how to interpret it or how to present it
+- Is `printRenderStats` useful for qwik app developer ? and how to interpret it or how to present it
 - For every page request, output performance timing result and server render metrics
--
 
 ## Misc
 
