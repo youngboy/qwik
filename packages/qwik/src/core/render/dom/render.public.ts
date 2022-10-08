@@ -3,7 +3,7 @@ import { isJSXNode, jsx } from '../jsx/jsx-runtime';
 import type { JSXNode, FunctionComponent } from '../jsx/types/jsx-node';
 import { domToVnode, visitJsxNode } from './visitor';
 import { getDocument } from '../../util/dom';
-import { qDev, qTest } from '../../util/qdev';
+import { qDev } from '../../util/qdev';
 import { version } from '../../version';
 import { QContainerAttr } from '../../util/markers';
 import { appendQwikDevTools } from '../../props/props';
@@ -49,6 +49,11 @@ export const render = async (
   if (qDev && containerEl.hasAttribute(QContainerAttr)) {
     throw qError(QError_cannotRenderOverExistingContainer, containerEl);
   }
+  // if (qDev) {
+  //   if (parent.childNodes.length > 0) {
+  //     throw new Error('Container must be empty before mounting anything inside');
+  //   }
+  // }
   injectQContainer(containerEl);
 
   const containerState = getContainerState(containerEl);
@@ -86,18 +91,6 @@ const renderRoot = async (
     await visitJsxNode(ctx, rootJsx, wrapJSX(parent, processedNodes), 0);
   } catch (err) {
     logError(err);
-    if (qDev && !qTest) {
-      if (err && err instanceof Error) {
-        doc.dispatchEvent(
-          new CustomEvent('qerror', {
-            bubbles: true,
-            detail: {
-              error: err,
-            },
-          })
-        );
-      }
-    }
   }
 
   staticCtx.$operations$.push(...staticCtx.$postOperations$);

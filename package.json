@@ -1,7 +1,7 @@
 {
   "private": true,
   "name": "qwik-monorepo",
-  "version": "0.9.0",
+  "version": "0.10.0",
   "scripts": {
     "build": "tsm scripts/index.ts --tsc --build --qwikcity --api --platform-binding-wasm-copy",
     "build.full": "tsm scripts/index.ts --tsc --build --api --eslint --qwikcity --qwikreact --cli --platform-binding --wasm",
@@ -15,7 +15,7 @@
     "build.cli.prod": "tsm scripts/index.ts --cli",
     "build.watch": "tsm scripts/index.ts --build  --qwikcity --watch --dev --platform-binding",
     "commit": "git-cz",
-    "link.dist": "cd packages/qwik/dist && npm link",
+    "link.dist": "cd packages/qwik/dist && npm link && cd ../../qwik-city/lib && npm link",
     "cli": "yarn build.cli && node packages/create-qwik/dist/create-qwik.cjs && tsm scripts/validate-cli.ts --copy-local-qwik-dist",
     "cli.validate": "tsm scripts/validate-cli.ts",
     "api.update": "tsm scripts/index.ts --tsc --api --dev",
@@ -129,7 +129,7 @@
   ],
   "packageManager": "yarn@3.2.0",
   "engines": {
-    "node": ">=14"
+    "node": ">=16"
   },
   "config": {
     "commitizen": {

@@ -5,10 +5,12 @@ import type { ComponentBaseProps, JSXChildren } from '../render/jsx/types/jsx-qw
 import type { FunctionComponent } from '../render/jsx/types/jsx-node';
 import { jsx } from '../render/jsx/jsx-runtime';
 import { SERIALIZABLE_STATE } from '../object/serializers';
-import { qTest } from '../util/qdev';
+import { qDev, qTest } from '../util/qdev';
 import { Virtual } from '../render/jsx/utils.public';
 import { assertQrl } from '../import/qrl-class';
 import type { ValueOrPromise } from '../util/types';
+import { invoke, newInvokeContext } from '../use/use-core';
+import { verifySerializable } from '../object/q-object';
 
 /**
  * Infers `Props` from the component.
@@ -137,9 +139,26 @@ export const componentQrl = <PROPS extends {}>(
   // Return a QComponent Factory function.
   function QwikComponent(props: PublicProps<PROPS>, key: string | null): JSXNode {
     assertQrl(componentQrl);
+    if (qDev) {
+      invoke(newInvokeContext(), () => {
+        for (const key of Object.keys(props)) {
+          if (key !== 'children') {
+            verifySerializable((props as any)[key]);
+          }
+        }
+      });
+    }
     const hash = qTest ? 'sX' : componentQrl.$hash$;
     const finalKey = hash + ':' + (key ? key : '');
-    return jsx(Virtual, { [OnRenderProp]: componentQrl, ...props }, finalKey) as any;
+    return jsx(
+      Virtual,
+      {
+        [OnRenderProp]: componentQrl,
+        children: props.children,
+        props,
+      },
+      finalKey
+    ) as any;
   }
   (QwikComponent as any)[SERIALIZABLE_STATE] = [componentQrl];
   return QwikComponent;
