@@ -14,32 +14,91 @@ postRuntimeMessage('DevtoolsScriptConnected', chrome.devtools.inspectedWindow.ta
 let panel: chrome.devtools.panels.ExtensionPanel | undefined;
 
 function getComponentProps() {
-  const html = document.querySelector('html');
-  if (!html) {
+  const container = document.querySelector('[q\\:container]');
+  if (!container) {
     return {
       status: 'No q container detected',
     };
   }
-  if (html.attributes['q:container'].value === 'paused') {
+  if (container.attributes['q:container'].value === 'paused') {
     return {
       status: 'container is paused',
     };
   }
-  // @ts-ignore
-  const vEl = $0.__virtual;
-  if (vEl && vEl._qc_) {
+
+  function searchHostEl(el: Element) {
+    let searchDepth = 0;
+    function isVirtualOpen(el: Comment) {
+      if (el.nodeType !== 8) {
+        return false;
+      }
+      if (
+        (el.data || '').startsWith('qv') &&
+        // no slot placeholder
+        (el.data || '').indexOf('q:sref') < 0
+      ) {
+        searchDepth += 1;
+        if (searchDepth === 1) {
+          return true;
+        }
+      }
+      if ((el.data || '').startsWith('/qv')) {
+        searchDepth -= 1;
+      }
+      return false;
+    }
+    let currentEl: any = el;
+    // FIXME: (perf) suffers from long list of dom nodes
+    while (currentEl && !isVirtualOpen(currentEl)) {
+      currentEl = currentEl.previousSibling || currentEl.parentNode;
+    }
+    if (currentEl) {
+      return currentEl.__virtual;
+    }
+    return null;
+  }
+  // TODO: how to present $captureRef$ or $capture$
+  //       to make developer understanding captured lexical scope
+  function formatQrl(qrl: any) {
     return {
-      renderQrl: vEl.$renderQrl$,
-      listeners: vEl._qc_.li,
-      props: vEl._qc_.$props$,
-      slots: vEl._qc_.$slots$,
-      vdom: vEl._qc_.$vdom$,
-      watch: (vEl._qc_.$watches$ || []).map((i) => i.$qrl$),
+      displayName: qrl?.$dev$?.displayName,
+      file: qrl?.$dev$?.file,
+      // above attrs would be empty for unknown reason
+      // save rawQrl here for debugging
+      rawQrl: qrl,
     };
   }
-  return {
-    status: 'Select an component to inspect',
+  function formatListeners(events: any) {
+    return (events || []).reduce((acc, item) => {
+      const [eventName, handlerQrl] = item;
+      if (acc[eventName]) {
+        acc[eventName] = [acc[eventName], formatQrl(handlerQrl)].flat();
+      } else {
+        acc[eventName] = formatQrl(handlerQrl);
+      }
+      return acc;
+    }, {});
+  }
+  // @ts-ignore
+  const selected = $0 as any;
+  const hostEl = searchHostEl(selected);
+  const ctx: any = {
+    Selected: 'Select a component to inspect',
   };
+  if (selected && selected._qc_) {
+    ctx.Selected = {
+      listeners: formatListeners(selected._qc_.li),
+      props: selected._qc_.props,
+    };
+  }
+  if (hostEl && hostEl._qc_) {
+    ctx.Component = {
+      props: hostEl._qc_.$props$,
+      listeners: formatListeners(hostEl._qc_.li),
+      qrl: formatQrl(hostEl._qc_.$componentQrl$),
+    };
+  }
+  return ctx;
 }
 
 function checkAndInit() {
